@@ -1,122 +1,530 @@
+
 import 'package:flutter/material.dart';
 
 void main() {
   runApp(const MyApp());
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
   @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // TRY THIS: Try running your application with "flutter run". You'll see
-        // the application has a purple toolbar. Then, without quitting the app,
-        // try changing the seedColor in the colorScheme below to Colors.green
-        // and then invoke "hot reload" (save your changes or press the "hot
-        // reload" button in a Flutter-supported IDE, or press "r" if you used
-        // the command line to start the app).
-        //
-        // Notice that the counter didn't reset back to zero; the application
-        // state is not lost during the reload. To reset the state, use hot
-        // restart instead.
-        //
-        // This works for code too, not just values: Most code changes can be
-        // tested with just a hot reload.
-        colorScheme: .fromSeed(seedColor: Colors.deepPurple),
-      ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
-    );
-  }
+  State<MyApp> createState() => _MyAppState();
 }
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
+class _MyAppState extends State<MyApp> {
+  final List<Map<String, dynamic>> transactions = [];
 
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
-
-  final String title;
-
-  @override
-  State<MyHomePage> createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
-
-  void _incrementCounter() {
+  void addTransaction(Map<String, dynamic> transaction) {
     setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
-      _counter++;
+      transactions.add(transaction);
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
+    return MaterialApp(
+      title: 'Personal Budget Planner',
+      debugShowCheckedModeBanner: false,
+      theme: ThemeData(
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: Colors.teal,
+        ),
+        useMaterial3: true,
+      ),
+      onGenerateRoute: (settings) {
+        if (settings.name == '/add') {
+          return MaterialPageRoute(
+            builder: (_) => const AddTransactionScreen(),
+          );
+        }
+
+        if (settings.name == '/history') {
+          return MaterialPageRoute(
+            builder: (_) => HistoryScreen(
+              transactions: transactions,
+            ),
+          );
+        }
+
+        return MaterialPageRoute(
+          builder: (_) => DashboardScreen(
+            transactions: transactions,
+            onAdd: addTransaction,
+          ),
+        );
+      },
+      home: DashboardScreen(
+        transactions: transactions,
+        onAdd: addTransaction,
+      ),
+    );
+  }
+}
+
+class DashboardScreen extends StatelessWidget {
+  final List<Map<String, dynamic>> transactions;
+  final Function(Map<String, dynamic>) onAdd;
+
+  const DashboardScreen({
+    super.key,
+    required this.transactions,
+    required this.onAdd,
+  });
+
+  double get totalIncome {
+    return transactions
+        .where((t) => t['type'] == 'Income')
+        .fold(0.0, (sum, t) => sum + (t['amount'] as double));
+  }
+
+  double get totalExpenses {
+    return transactions
+        .where((t) => t['type'] == 'Expense')
+        .fold(0.0, (sum, t) => sum + (t['amount'] as double));
+  }
+
+  Future<void> openAddScreen(BuildContext context) async {
+  final result = await Navigator.push<Map<String, dynamic>>(
+    context,
+    MaterialPageRoute(
+      builder: (context) => const AddTransactionScreen(),
+    ),
+  );
+
+  if (!context.mounted) return;
+
+  if (result != null) {
+    onAdd(result);
+  }
+}
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        // TRY THIS: Try changing the color here to a specific color (to
-        // Colors.amber, perhaps?) and trigger a hot reload to see the AppBar
-        // change color while the other colors stay the same.
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
-        title: Text(widget.title),
+        title: const Text('Personal Budget Planner'),
+        actions: [
+          IconButton(
+            tooltip: 'Transaction history',
+            icon: const Icon(Icons.history),
+            onPressed: () {
+              Navigator.pushNamed(context, '/history');
+            },
+          ),
+        ],
       ),
-      body: Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
-        child: Column(
-          // Column is also a layout widget. It takes a list of children and
-          // arranges them vertically. By default, it sizes itself to fit its
-          // children horizontally, and tries to be as tall as its parent.
-          //
-          // Column has various properties to control how it sizes itself and
-          // how it positions its children. Here we use mainAxisAlignment to
-          // center the children vertically; the main axis here is the vertical
-          // axis because Columns are vertical (the cross axis would be
-          // horizontal).
-          //
-          // TRY THIS: Invoke "debug painting" (choose the "Toggle Debug Paint"
-          // action in the IDE, or press "p" in the console), to see the
-          // wireframe for each widget.
-          mainAxisAlignment: .center,
+      body: LayoutBuilder(
+        builder: (context, constraints) {
+          final int columns = constraints.maxWidth >= 700 ? 2 : 1;
+
+          return SingleChildScrollView(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                // Experiment 2: Container, Stack, Text and Icon
+                Container(
+                  height: 150,
+                  width: double.infinity,
+                  margin: const EdgeInsets.only(bottom: 16),
+                  child: Stack(
+                    children: [
+                      Container(
+                        decoration: BoxDecoration(
+                          color: Colors.teal,
+                          borderRadius: BorderRadius.circular(18),
+                        ),
+                      ),
+                      const Positioned(
+                        left: 20,
+                        top: 25,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Manage Your Money',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 22,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            SizedBox(height: 8),
+                            Text(
+                              'Plan today. Save for tomorrow.',
+                              style: TextStyle(color: Colors.white),
+                            ),
+                            SizedBox(height: 8),
+                            Icon(
+                              Icons.account_balance_wallet,
+                              color: Colors.white,
+                              size: 28,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+
+                // Balance card
+                Card(
+                  child: Padding(
+                    padding: const EdgeInsets.all(20),
+                    child: Column(
+                      children: [
+                        const Text('Current Balance'),
+                        const SizedBox(height: 8),
+                        Text(
+                          '₹${(totalIncome - totalExpenses).toStringAsFixed(2)}',
+                          style: const TextStyle(
+                            fontSize: 28,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+
+                const SizedBox(height: 16),
+
+                // Experiment 2: Row and responsive layout
+                GridView.count(
+                  crossAxisCount: columns,
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  crossAxisSpacing: 12,
+                  mainAxisSpacing: 12,
+                  childAspectRatio: 2.4,
+                  children: [
+                    SummaryCard(
+                      title: 'Income',
+                      amount: totalIncome,
+                      icon: Icons.arrow_downward,
+                      color: Colors.green,
+                    ),
+                    SummaryCard(
+                      title: 'Expenses',
+                      amount: totalExpenses,
+                      icon: Icons.arrow_upward,
+                      color: Colors.red,
+                    ),
+                  ],
+                ),
+
+                const SizedBox(height: 20),
+
+                const Text(
+                  'Recent Transactions',
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+
+                const SizedBox(height: 8),
+
+                if (transactions.isEmpty)
+                  const Card(
+                    child: Padding(
+                      padding: EdgeInsets.all(20),
+                      child: Text(
+                        'No transactions yet. Add your first transaction!',
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                  )
+                else
+                  ...transactions.reversed.take(5).map(
+                    (transaction) => TransactionTile(
+                      transaction: transaction,
+                    ),
+                  ),
+
+                const SizedBox(height: 20),
+
+                ElevatedButton.icon(
+                  onPressed: () => openAddScreen(context),
+                  icon: const Icon(Icons.add),
+                  label: const Text('Add Transaction'),
+                ),
+
+                const SizedBox(height: 10),
+
+                OutlinedButton.icon(
+                  onPressed: () {
+                    Navigator.pushNamed(context, '/history');
+                  },
+                  icon: const Icon(Icons.history),
+                  label: const Text('View All Transactions'),
+                ),
+              ],
+            ),
+          );
+        },
+      ),
+    );
+  }
+}
+
+class SummaryCard extends StatelessWidget {
+  final String title;
+  final double amount;
+  final IconData icon;
+  final Color color;
+
+  const SummaryCard({
+    super.key,
+    required this.title,
+    required this.amount,
+    required this.icon,
+    required this.color,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Row(
           children: [
-            const Text('You have pushed the button this many times:'),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headlineMedium,
+            Icon(icon, color: color, size: 30),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(title),
+                  Text(
+                    '₹${amount.toStringAsFixed(2)}',
+                    style: const TextStyle(
+                      fontSize: 17,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
+              ),
             ),
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
+    );
+  }
+}
+
+class TransactionTile extends StatelessWidget {
+  final Map<String, dynamic> transaction;
+
+  const TransactionTile({
+    super.key,
+    required this.transaction,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final bool isIncome = transaction['type'] == 'Income';
+
+    return Card(
+      child: ListTile(
+        leading: Icon(
+          isIncome ? Icons.arrow_downward : Icons.arrow_upward,
+          color: isIncome ? Colors.green : Colors.red,
+        ),
+        title: Text(transaction['title'] as String),
+        subtitle: Text(
+          '${transaction['category']} • ${transaction['type']}',
+        ),
+        trailing: Text(
+          '${isIncome ? '+' : '-'}₹${(transaction['amount'] as double).toStringAsFixed(2)}',
+          style: TextStyle(
+            color: isIncome ? Colors.green : Colors.red,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
       ),
+    );
+  }
+}
+
+class AddTransactionScreen extends StatefulWidget {
+  const AddTransactionScreen({super.key});
+
+  @override
+  State<AddTransactionScreen> createState() =>
+      _AddTransactionScreenState();
+}
+
+class _AddTransactionScreenState extends State<AddTransactionScreen> {
+  final _formKey = GlobalKey<FormState>();
+  final _titleController = TextEditingController();
+  final _amountController = TextEditingController();
+
+  String _type = 'Expense';
+  String _category = 'Food';
+
+  @override
+  void dispose() {
+    _titleController.dispose();
+    _amountController.dispose();
+    super.dispose();
+  }
+
+  void saveTransaction() {
+    if (!_formKey.currentState!.validate()) return;
+
+    final transaction = <String, dynamic>{
+      'title': _titleController.text.trim(),
+      'amount': double.parse(_amountController.text.trim()),
+      'type': _type,
+      'category': _category,
+    };
+
+    Navigator.pop(context, transaction);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text('Add Transaction')),
+      body: Padding(
+        padding: const EdgeInsets.all(20),
+        child: Form(
+          key: _formKey,
+          child: ListView(
+            children: [
+              TextFormField(
+                controller: _titleController,
+                decoration: const InputDecoration(
+                  labelText: 'Transaction title',
+                  border: OutlineInputBorder(),
+                ),
+                validator: (value) {
+                  if (value == null || value.trim().isEmpty) {
+                    return 'Please enter a title';
+                  }
+                  return null;
+                },
+              ),
+
+              const SizedBox(height: 16),
+
+              TextFormField(
+                controller: _amountController,
+                keyboardType: const TextInputType.numberWithOptions(
+                  decimal: true,
+                ),
+                decoration: const InputDecoration(
+                  labelText: 'Amount',
+                  prefixText: '₹ ',
+                  border: OutlineInputBorder(),
+                ),
+                validator: (value) {
+                  final amount = double.tryParse(value ?? '');
+                  if (amount == null || amount <= 0) {
+                    return 'Enter an amount greater than zero';
+                  }
+                  return null;
+                },
+              ),
+
+              const SizedBox(height: 16),
+
+              DropdownButtonFormField<String>(
+                initialValue: _type,
+                decoration: const InputDecoration(
+                  labelText: 'Type',
+                  border: OutlineInputBorder(),
+                ),
+                items: ['Income', 'Expense']
+                    .map(
+                      (type) => DropdownMenuItem(
+                        value: type,
+                        child: Text(type),
+                      ),
+                    )
+                    .toList(),
+                onChanged: (value) {
+                  if (value != null) {
+                    setState(() {
+                      _type = value;
+                    });
+                  }
+                },
+              ),
+
+              const SizedBox(height: 16),
+
+              DropdownButtonFormField<String>(
+                initialValue: _category,
+                decoration: const InputDecoration(
+                  labelText: 'Category',
+                  border: OutlineInputBorder(),
+                ),
+                items: [
+                  'Food',
+                  'Travel',
+                  'Education',
+                  'Shopping',
+                  'Salary',
+                  'Other',
+                ]
+                    .map(
+                      (category) => DropdownMenuItem(
+                        value: category,
+                        child: Text(category),
+                      ),
+                    )
+                    .toList(),
+                onChanged: (value) {
+                  if (value != null) {
+                    setState(() {
+                      _category = value;
+                    });
+                  }
+                },
+              ),
+
+              const SizedBox(height: 24),
+
+              ElevatedButton(
+                onPressed: saveTransaction,
+                child: const Text('Save Transaction'),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class HistoryScreen extends StatelessWidget {
+  final List<Map<String, dynamic>> transactions;
+
+  const HistoryScreen({
+    super.key,
+    required this.transactions,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text('Transaction History')),
+      body: transactions.isEmpty
+          ? const Center(child: Text('No transactions available'))
+          : ListView.builder(
+              padding: const EdgeInsets.all(12),
+              itemCount: transactions.length,
+              itemBuilder: (context, index) {
+                return TransactionTile(
+                  transaction: transactions[
+                    transactions.length - 1 - index
+                  ],
+                );
+              },
+            ),
     );
   }
 }
