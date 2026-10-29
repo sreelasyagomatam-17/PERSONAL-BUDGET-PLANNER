@@ -189,7 +189,7 @@ class DashboardScreen extends StatelessWidget {
 
                 const SizedBox(height: 16),
 
-                // Experiment 2: Row and responsive layout
+                // Experiment 3: Responsive layout for mobile and desktop screens
                 GridView.count(
                   crossAxisCount: columns,
                   shrinkWrap: true,
