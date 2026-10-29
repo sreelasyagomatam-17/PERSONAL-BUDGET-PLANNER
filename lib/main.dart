@@ -1,8 +1,15 @@
 
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'providers/transaction_provider.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(
+    ChangeNotifierProvider(
+      create: (_) => TransactionProvider(),
+      child: const MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatefulWidget {
@@ -13,17 +20,16 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  final List<Map<String, dynamic>> transactions = [];
-
   void addTransaction(Map<String, dynamic> transaction) {
-    setState(() {
-      transactions.add(transaction);
-    });
+    context.read<TransactionProvider>().addTransaction(transaction);
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
+@override
+Widget build(BuildContext context) {
+  final transactions =
+      context.watch<TransactionProvider>().transactions;
+
+  return MaterialApp(
       title: 'Personal Budget Planner',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(

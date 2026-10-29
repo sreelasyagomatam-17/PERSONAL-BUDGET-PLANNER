@@ -82,3 +82,14 @@
 
 # 
 
+### Experiment 5: State Management with Provider
+
+**Aim:** To manage application state using Provider and ChangeNotifier.
+
+**Implementation:**
+- Created `TransactionProvider` to manage the transaction list.
+- Used `ChangeNotifier` and `notifyListeners()` to notify the UI when transactions change.
+- Used `context.watch()` to listen for changes and rebuild the UI.
+- Used `context.read()` to add transactions through the provider.
+
+**Result:** Income and expense transactions are saved successfully, dashboard totals update, and transaction history displays the saved transactions.
