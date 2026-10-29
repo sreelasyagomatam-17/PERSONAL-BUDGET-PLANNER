@@ -93,3 +93,16 @@
 - Used `context.read()` to add transactions through the provider.
 
 **Result:** Income and expense transactions are saved successfully, dashboard totals update, and transaction history displays the saved transactions.
+
+### Experiment 6: Custom Widgets, Themes and Styles
+
+**Aim:** To create reusable custom widgets and apply application themes and custom styles in Flutter.
+
+**Implementation:**
+- Created a reusable `SummaryCard` widget for displaying income and expenses.
+- Styled cards using custom icons, colors, padding, and rounded corners.
+- Configured a consistent application theme using `ThemeData`.
+- Customized the app bar, card appearance, and elevated buttons.
+- Used `Theme.of(context)` and `TextTheme` to apply consistent text styling.
+
+**Result:** The Personal Budget Planner displays consistently styled dashboard cards and application components while preserving existing transaction functionality.

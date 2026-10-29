@@ -32,12 +32,44 @@ Widget build(BuildContext context) {
   return MaterialApp(
       title: 'Personal Budget Planner',
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: Colors.teal,
-        ),
-        useMaterial3: true,
+    theme: ThemeData(
+  colorScheme: ColorScheme.fromSeed(
+    seedColor: Colors.teal,
+  ),
+  useMaterial3: true,
+
+  // Experiment 6: Custom application theme
+  scaffoldBackgroundColor: const Color(0xFFF5F8F7),
+
+  appBarTheme: const AppBarTheme(
+    backgroundColor: Colors.teal,
+    foregroundColor: Colors.white,
+    centerTitle: true,
+  ),
+
+  cardTheme: CardThemeData(
+    color: Colors.white,
+    elevation: 3,
+    margin: const EdgeInsets.symmetric(vertical: 6),
+    shape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.circular(16),
+    ),
+  ),
+
+  elevatedButtonTheme: ElevatedButtonThemeData(
+    style: ElevatedButton.styleFrom(
+      backgroundColor: Colors.teal,
+      foregroundColor: Colors.white,
+      padding: const EdgeInsets.symmetric(
+        horizontal: 24,
+        vertical: 14,
       ),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+      ),
+    ),
+  ),
+),
       onGenerateRoute: (settings) {
         if (settings.name == '/add') {
           return MaterialPageRoute(
@@ -273,7 +305,7 @@ class DashboardScreen extends StatelessWidget {
     );
   }
 }
-
+// Experiment 6: Custom reusable Summary Card widget
 class SummaryCard extends StatelessWidget {
   final String title;
   final double amount;
@@ -290,24 +322,47 @@ class SummaryCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Card(
+      clipBehavior: Clip.antiAlias,
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(18),
         child: Row(
           children: [
-            Icon(icon, color: color, size: 30),
-            const SizedBox(width: 12),
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: color.withValues(alpha: 0.12),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Icon(
+                icon,
+                color: color,
+                size: 28,
+              ),
+            ),
+            const SizedBox(width: 14),
             Expanded(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(title),
+                  Text(
+                    title,
+                    style: theme.textTheme.titleSmall?.copyWith(
+                      color: Colors.grey.shade700,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  const SizedBox(height: 6),
                   Text(
                     '₹${amount.toStringAsFixed(2)}',
-                    style: const TextStyle(
-                      fontSize: 17,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: theme.textTheme.titleLarge?.copyWith(
                       fontWeight: FontWeight.bold,
+                      color: color,
                     ),
                   ),
                 ],
@@ -319,6 +374,7 @@ class SummaryCard extends StatelessWidget {
     );
   }
 }
+
 
 class TransactionTile extends StatelessWidget {
   final Map<String, dynamic> transaction;
