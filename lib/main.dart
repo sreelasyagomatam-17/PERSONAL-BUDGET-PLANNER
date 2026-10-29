@@ -196,7 +196,7 @@ class DashboardScreen extends StatelessWidget {
                   physics: const NeverScrollableScrollPhysics(),
                   crossAxisSpacing: 12,
                   mainAxisSpacing: 12,
-                  childAspectRatio: 2.4,
+                  childAspectRatio: constraints.maxWidth >= 700 ? 2.8 : 2.2,
                   children: [
                     SummaryCard(
                       title: 'Income',
@@ -528,3 +528,4 @@ class HistoryScreen extends StatelessWidget {
     );
   }
 }
+
