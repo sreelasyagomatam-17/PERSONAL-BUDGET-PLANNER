@@ -133,3 +133,28 @@ The Personal Budget Planner application uses a form to add transactions. Users e
 
 ### Result
 Successfully designed and implemented a transaction form using various Flutter input widgets with form validation and error handling.
+
+## Experiment 8: Implementing UI Animations Using Flutter
+
+### Aim
+1. To understand animation fundamentals in Flutter.
+2. To implement animations using the Flutter animation framework.
+3. To create fade and slide animations for UI elements.
+4. To improve user experience using animated widgets.
+
+### Implementation
+1. AnimatedContainer: Changes the size and color of a container using Curves.easeInOut.
+2. Fade Animation: Uses AnimatedOpacity to show and hide the Flutter logo.
+3. Slide Animation: Uses AnimatedPositioned to move an orange square.
+4. Buttons are provided to control each animation.
+
+### Widgets Used
+- AnimatedContainer
+- AnimatedOpacity
+- AnimatedPositioned
+- Stack
+- FlutterLogo
+- ElevatedButton
+
+### Result
+Successfully implemented and tested container, fade, and slide animations in the Personal Budget Planner application.

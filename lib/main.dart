@@ -84,6 +84,11 @@ Widget build(BuildContext context) {
             ),
           );
         }
+if (settings.name == '/animation') {
+  return MaterialPageRoute(
+    builder: (_) => const AnimationDemoScreen(),
+  );
+}
 
         return MaterialPageRoute(
           builder: (_) => DashboardScreen(
@@ -147,6 +152,13 @@ class DashboardScreen extends StatelessWidget {
             icon: const Icon(Icons.history),
             onPressed: () {
               Navigator.pushNamed(context, '/history');
+            },
+          ),
+          IconButton(
+            tooltip: 'Animation Demo',
+            icon: const Icon(Icons.play_circle_outline),
+            onPressed: () {
+              Navigator.pushNamed(context, '/animation');
             },
           ),
         ],
@@ -616,4 +628,118 @@ class HistoryScreen extends StatelessWidget {
     );
   }
 }
+class AnimationDemoScreen extends StatefulWidget {
+  const AnimationDemoScreen({super.key});
 
+  @override
+  State<AnimationDemoScreen> createState() =>
+      _AnimationDemoScreenState();
+}
+
+class _AnimationDemoScreenState extends State<AnimationDemoScreen> {
+  bool _expanded = false;
+  double _opacity = 1.0;
+  bool _moved = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Animation Demo'),
+      ),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            const Text(
+              '1. Animated Container',
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 20),
+            AnimatedContainer(
+              width: _expanded ? 250 : 120,
+              height: _expanded ? 250 : 120,
+              duration: const Duration(seconds: 1),
+              curve: Curves.easeInOut,
+              color: _expanded ? Colors.green : Colors.blue,
+            ),
+            const SizedBox(height: 12),
+            ElevatedButton(
+              onPressed: () {
+                setState(() {
+                  _expanded = !_expanded;
+                });
+              },
+              child: const Text('Change Size and Color'),
+            ),
+
+            const Divider(height: 40),
+
+            const Text(
+              '2. Fade Animation',
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 20),
+            AnimatedOpacity(
+              opacity: _opacity,
+              duration: const Duration(seconds: 2),
+              child: const FlutterLogo(size: 120),
+            ),
+            const SizedBox(height: 12),
+            ElevatedButton(
+              onPressed: () {
+                setState(() {
+                  _opacity = _opacity == 1.0 ? 0.0 : 1.0;
+                });
+              },
+              child: const Text('Toggle Fade'),
+            ),
+
+            const Divider(height: 40),
+
+            const Text(
+              '3. Slide Animation',
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 20),
+            SizedBox(
+              height: 180,
+              width: double.infinity,
+              child: LayoutBuilder(
+                builder: (context, constraints) {
+                  final maxLeft =
+                      (constraints.maxWidth - 80).clamp(20.0, 200.0);
+
+                  return Stack(
+                    children: [
+                      AnimatedPositioned(
+                        duration: const Duration(seconds: 2),
+                        curve: Curves.easeInOut,
+                        left: _moved ? maxLeft : 20,
+                        top: 40,
+                        child: Container(
+                          width: 80,
+                          height: 80,
+                          color: Colors.orange,
+                        ),
+                      ),
+                    ],
+                  );
+                },
+              ),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                setState(() {
+                  _moved = !_moved;
+                });
+              },
+              child: const Text('Move Square'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
