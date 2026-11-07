@@ -181,3 +181,61 @@ https://jsonplaceholder.typicode.com/users
 
 ### Result
 Successfully fetched user details from a REST API, parsed JSON data, and displayed the results in the Personal Budget Planner application.
+
+## Experiment 10: Writing Unit Tests for Flutter UI Components and Using Flutter Debugging Tools
+
+### Aim
+1. To understand software testing in Flutter.
+2. To write unit tests for Flutter UI components.
+3. To execute test cases using the Flutter testing framework.
+4. To use Flutter debugging tools to identify and fix issues.
+
+### Implementation
+
+**1. Unit Testing**
+
+Created `lib/utils/calculator.dart` with methods for:
+- Addition
+- Subtraction
+- Multiplication
+
+Created `test/calculator_test.dart` using the Flutter testing framework.
+
+**2. Widget Testing**
+
+Created widget tests in `test/widget_test.dart` to verify:
+- Personal Budget Planner dashboard title.
+- Add Transaction button.
+- Current Balance text.
+- Add Transaction form validation for empty title and invalid amount.
+
+**3. Flutter Testing Tools**
+
+Used:
+- `flutter_test` package.
+- `test()` for unit testing.
+- `testWidgets()` for widget testing.
+- `expect()` and matchers to verify expected results.
+- `WidgetTester` to interact with widgets.
+
+**4. Debugging Tools**
+
+Used the following Flutter debugging tools:
+- Flutter Inspector to inspect the widget tree and layout.
+- Debug Console to view errors and debugging messages.
+- Breakpoints to pause execution and inspect variables.
+- Flutter DevTools to analyze application performance.
+- `flutter analyze` to identify code issues.
+- Hot Reload to view code changes quickly.
+- Hot Restart to restart the application.
+
+### Test Execution
+
+Command:
+`flutter test`
+
+Result: All 5 tests passed successfully.
+
+### Conclusion
+
+Successfully implemented unit testing and widget testing in the Personal Budget Planner application. Executed all test cases successfully and learned to use Flutter debugging tools to identify and resolve application issues.
