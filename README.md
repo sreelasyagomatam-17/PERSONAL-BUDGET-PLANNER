@@ -106,3 +106,30 @@
 - Used `Theme.of(context)` and `TextTheme` to apply consistent text styling.
 
 **Result:** The Personal Budget Planner displays consistently styled dashboard cards and application components while preserving existing transaction functionality.
+
+## Experiment 7: Designing Forms with Various Input Fields and Implementing Form Validation and Error Handling
+
+### Aim
+To design forms using different Flutter input widgets, collect user information, validate inputs, and display appropriate error messages.
+
+### Concepts Used
+1. Form and GlobalKey<FormState>
+2. TextFormField for transaction title and amount.
+3. Input validation for required title and positive amount.
+4. DropdownButtonFormField for transaction category.
+5. RadioGroup and RadioListTile for Income and Expense selection.
+6. CheckboxListTile for transaction confirmation.
+7. SnackBar for displaying error messages.
+8. TextEditingController for managing input values.
+
+### Implementation
+The Personal Budget Planner application uses a form to add transactions. Users enter the transaction title and amount, select the transaction type and category, and confirm the details before saving.
+
+### Validation and Error Handling
+- Transaction title cannot be empty.
+- Amount must be greater than zero.
+- Users must confirm transaction details before saving.
+- SnackBar displays a friendly error message when confirmation is missing.
+
+### Result
+Successfully designed and implemented a transaction form using various Flutter input widgets with form validation and error handling.

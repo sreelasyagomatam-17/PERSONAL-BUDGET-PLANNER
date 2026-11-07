@@ -425,6 +425,7 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
 
   String _type = 'Expense';
   String _category = 'Food';
+bool _confirmDetails = false;
 
   @override
   void dispose() {
@@ -435,6 +436,15 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
 
   void saveTransaction() {
     if (!_formKey.currentState!.validate()) return;
+
+if (!_confirmDetails) {
+  ScaffoldMessenger.of(context).showSnackBar(
+    const SnackBar(
+      content: Text('Please confirm the transaction details'),
+    ),
+  );
+  return;
+}
 
     final transaction = <String, dynamic>{
       'title': _titleController.text.trim(),
@@ -492,30 +502,32 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
               ),
 
               const SizedBox(height: 16),
+const Text(
+  'Transaction Type',
+  style: TextStyle(fontWeight: FontWeight.bold),
+),
 
-              DropdownButtonFormField<String>(
-                initialValue: _type,
-                decoration: const InputDecoration(
-                  labelText: 'Type',
-                  border: OutlineInputBorder(),
-                ),
-                items: ['Income', 'Expense']
-                    .map(
-                      (type) => DropdownMenuItem(
-                        value: type,
-                        child: Text(type),
-                      ),
-                    )
-                    .toList(),
-                onChanged: (value) {
-                  if (value != null) {
-                    setState(() {
-                      _type = value;
-                    });
-                  }
-                },
-              ),
-
+RadioGroup<String>(
+  groupValue: _type,
+  onChanged: (value) {
+    setState(() {
+      _type = value!;
+    });
+  },
+  child: Column(
+    children: [
+      const RadioListTile<String>(
+        title: Text('Income'),
+        value: 'Income',
+      ),
+      const RadioListTile<String>(
+        title: Text('Expense'),
+        value: 'Expense',
+      ),
+    ],
+  ),
+),
+             
               const SizedBox(height: 16),
 
               DropdownButtonFormField<String>(
@@ -548,12 +560,26 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
                 },
               ),
 
-              const SizedBox(height: 24),
+           const SizedBox(height: 20),
 
-              ElevatedButton(
-                onPressed: saveTransaction,
-                child: const Text('Save Transaction'),
-              ),
+CheckboxListTile(
+  value: _confirmDetails,
+  title: const Text('I confirm that the transaction details are correct'),
+  controlAffinity: ListTileControlAffinity.leading,
+  contentPadding: EdgeInsets.zero,
+  onChanged: (value) {
+    setState(() {
+      _confirmDetails = value ?? false;
+    });
+  },
+),
+
+const SizedBox(height: 16),
+
+ElevatedButton(
+  onPressed: saveTransaction,
+  child: const Text('Save Transaction'),
+),
             ],
           ),
         ),
