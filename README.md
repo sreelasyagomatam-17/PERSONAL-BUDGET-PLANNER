@@ -158,3 +158,26 @@ Successfully designed and implemented a transaction form using various Flutter i
 
 ### Result
 Successfully implemented and tested container, fade, and slide animations in the Personal Budget Planner application.
+
+## Experiment 9: Fetching Data from a REST API
+
+### Aim
+1. To understand REST API concepts.
+2. To fetch data using the HTTP package.
+3. To parse JSON responses.
+4. To display API data using Flutter widgets.
+
+### API Used
+https://jsonplaceholder.typicode.com/users
+
+### Implementation
+1. Added the HTTP package to pubspec.yaml.
+2. Performed HTTP GET requests using the http package.
+3. Parsed JSON data using jsonDecode().
+4. Displayed user names and email addresses using ListView.builder.
+5. Used Card and ListTile widgets.
+6. Implemented loading indicators and error handling.
+7. Added a refresh button to fetch data again.
+
+### Result
+Successfully fetched user details from a REST API, parsed JSON data, and displayed the results in the Personal Budget Planner application.

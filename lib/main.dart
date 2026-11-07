@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'providers/transaction_provider.dart';
+import 'rest_api_screen.dart';
 
 void main() {
   runApp(
@@ -89,6 +90,11 @@ if (settings.name == '/animation') {
     builder: (_) => const AnimationDemoScreen(),
   );
 }
+if (settings.name == '/api') {
+  return MaterialPageRoute(
+    builder: (_) => const RestApiScreen(),
+  );
+}
 
         return MaterialPageRoute(
           builder: (_) => DashboardScreen(
@@ -145,25 +151,32 @@ class DashboardScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Personal Budget Planner'),
-        actions: [
-          IconButton(
-            tooltip: 'Transaction history',
-            icon: const Icon(Icons.history),
-            onPressed: () {
-              Navigator.pushNamed(context, '/history');
-            },
-          ),
-          IconButton(
-            tooltip: 'Animation Demo',
-            icon: const Icon(Icons.play_circle_outline),
-            onPressed: () {
-              Navigator.pushNamed(context, '/animation');
-            },
-          ),
-        ],
-      ),
-      body: LayoutBuilder(
+  title: const Text('Personal Budget Planner'),
+  actions: [
+    IconButton(
+      tooltip: 'Transaction history',
+      icon: const Icon(Icons.history),
+      onPressed: () {
+        Navigator.pushNamed(context, '/history');
+      },
+    ),
+    IconButton(
+      tooltip: 'Animation Demo',
+      icon: const Icon(Icons.play_circle_outline),
+      onPressed: () {
+        Navigator.pushNamed(context, '/animation');
+      },
+    ),
+    IconButton(
+      tooltip: 'REST API Demo',
+      icon: const Icon(Icons.cloud_download),
+      onPressed: () {
+        Navigator.pushNamed(context, '/api');
+      },
+    ),
+  ],
+),
+   body: LayoutBuilder(
         builder: (context, constraints) {
           final int columns = constraints.maxWidth >= 700 ? 2 : 1;
 
